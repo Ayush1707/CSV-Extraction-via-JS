@@ -1,0 +1,191 @@
+<!doctype html>
+<html>
+<head>
+    <title>Assignment</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
+    <style>
+        body{
+            text-align: center;
+            font-family: arial;
+        }
+        .button{
+            margin:20px;
+            font-size:16px;
+            font-weight: bold;
+            padding:5px 10px;
+        }
+    </style>
+</head>
+<body>
+    <a href="data.json" target="_blank">Open JSON file</a><br />
+    <script src="jquery.min.js"></script>
+    
+    <input type="button" value="Get and parse JSON" class="button" />
+    <br />
+    <span id="results"></span>
+   
+    <p id="insert"> 1. No. of orders the site receive are :</p>
+    <p id="insert1"> 2. total amount of the orders :</p>
+    <p id="insert2"> 3. names of the customers who ordered once and did not order again. :</p>
+
+    <table style="width:60%" id="t">
+           4. Table for distribution of customers who ordered exactly once, exactly twice and so on up to 4 orders and group the rest as 5 orders and above.<br> <style>
+           
+           
+
+
+                    table, th, td {
+                      border: 1px solid black;
+                      border-collapse: collapse;
+                    }
+                    th, td {
+                      padding: 5px;
+                      text-align: left;    
+                    }
+                    </style>
+        <tr>
+            <th>Orders</th> 
+            <th>Count</th>
+        </tr>
+        
+    </table>
+    <div class="chart-container" style="position: relative; height:40vh; width:80vw">
+    <canvas id="myChart"> </canvas> 
+    </div>
+
+    <script>
+        var request = new XMLHttpRequest();
+        request.open('GET', 'data.json', true);
+        request.onload = function () {
+            // begin accessing JSON data here
+            var data = JSON.parse(this.response);
+            console.log(data.length);
+            var p= document.getElementById("insert");
+                p.innerHTML = p.innerHTML+data.length;
+            var sum=0;
+            for (var i = 0; i < data.length; i++) {
+                sum+= data[i].Amount;
+            }
+            console.log(sum);
+           document.getElementById("insert1").innerHTML = document.getElementById("insert1").innerHTML+sum;
+            var name = new Array();
+            for (var i = 0; i < data.length; i++) {
+                name.push(data[i].Name);
+            }
+            name.sort();
+            var p= document.getElementById("insert2");
+        
+            for (var i = 0; i < data.length; i++) {
+                    if(i==0)
+                    {
+                        if(name[i]!=name[i+1]){
+                            console.log(name[i]);
+                            p.innerHTML = p.innerHTML+name[i]+",";
+                        }
+                        
+                    }
+                    else if(i==data.length-1)
+                    {
+                        if(name[i]!=name[i-1]){
+                            p.innerHTML = p.innerHTML+name[i]+",";
+                            console.log(name[i]);
+                        }
+                        
+                    }
+                    else if((name[i]!=name[i+1])&&(name[i]!=name[i-1]))
+                    {   
+                        p.innerHTML = p.innerHTML+name[i]+",";
+                        console.log(name[i]);
+                    }
+                }     
+                
+                
+        
+        var freq = {};
+            for(var i=0;i<name.length;i++){
+                freq[name[i]] = 0;
+        }
+            for(var i=0;i<data.length-1;i++){
+                freq[data[i].Name]++;
+        } 
+            var p1=0,p2=0,p3=0,p4=0,p5=0;
+                for(var i=0;i<name.length;i++){
+                     if( freq[name[i]] == 1)
+                            {p1++;}
+                    else if( freq[name[i]] == 2)
+                            {p2++;}
+                    else if( freq[name[i]] == 3)
+                            {p3++;}
+                    else if( freq[name[i]] == 4)
+                            {p4++;}
+                            else{p5++};
+            }
+                             console.log(p1);                 
+                             console.log(p2);
+                             console.log(p3);
+                             console.log(p4);
+                             console.log(p5);
+
+
+                             var table= document.getElementById("t");
+                             
+
+                             var row = table.insertRow(1);
+                            var cell1 = row.insertCell(0);
+                            var cell2 = row.insertCell(1);
+                            cell1.innerHTML = 1;
+                            cell2.innerHTML = p1;
+
+                             row = table.insertRow(2);
+                            cell1 = row.insertCell(0);
+                            cell2 = row.insertCell(1);
+                            cell1.innerHTML = 2;
+                            cell2.innerHTML = p2;
+
+                            row = table.insertRow(3);
+                            cell1 = row.insertCell(0);
+                            cell2 = row.insertCell(1);
+                            cell1.innerHTML = 3;
+                            cell2.innerHTML = p3;
+
+                            row = table.insertRow(4);
+                            cell1 = row.insertCell(0);
+                            cell2 = row.insertCell(1);
+                            cell1.innerHTML = 4;
+                            cell2.innerHTML = p4;
+
+                            row = table.insertRow(5);
+                            cell1 = row.insertCell(0);
+                            cell2 = row.insertCell(1);
+                            cell1.innerHTML = 5;
+                            cell2.innerHTML = p5;
+                        var ctx = document.getElementById('myChart').getContext('2d');
+                        var chart = new Chart(ctx, {
+                            type: 'bar',
+                            data: {
+                                labels: ["1", "2", "3", "4", "5+"],
+                                datasets: [{
+                                    label: "Bar graph for the information in question 4 HTML report",
+                                    backgroundColor: 'rgb(255, 99, 132)',
+                                    borderColor: 'rgb(255, 99, 132)',
+                                    data: [p1,p2,p3,p4,p5],
+                                }]
+                            },
+
+                            // Configuration options go here
+                            options: {scales: {
+                                        yAxes: [{
+                                            ticks: {
+                                                beginAtZero: true
+                                            }
+                                        }]
+                                    }}
+                        });
+
+        }
+        
+        request.send();
+        </script>
+
+        </body>
+        </html>
